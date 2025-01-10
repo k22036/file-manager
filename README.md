@@ -1,17 +1,26 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
-
 ## Getting Started
 
-First, run the development server:
+```bash
+npm install
+```
+
+```bash
+npx prisma migrate dev --name init
+```
+
+```bash
+touch .env.local
+openssl rand -base64 32
+```
+
+.env.localに先ほど作成したランダムな値を入力する
+
+```.env.local
+AUTH_SECRET=secret
+```
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
