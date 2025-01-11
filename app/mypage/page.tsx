@@ -55,9 +55,9 @@ export default function MyPage() {
     }, []);
 
     const convertToJST = (dateString: string): string => {
-        const utcDate = DateTime.fromISO(dateString, {zone: 'utc'});
+        const utcDate = DateTime.fromISO(dateString, { zone: 'utc' });
         const jstDate = utcDate.setZone('Asia/Tokyo');
-        return jstDate.toLocaleString(DateTime.DATETIME_MED);
+        return jstDate.toFormat('yyyy/M/d HH:mm:ss');
     };
 
     const handleUpload = async (event: ChangeEvent<HTMLInputElement>) => {
