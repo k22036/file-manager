@@ -1,3 +1,9 @@
+## You can clone this repository
+
+```bash
+git clone https://github.com/k22036/file-manager.git
+```
+
 ## Getting Started
 
 ```bash
