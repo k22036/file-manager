@@ -4,8 +4,10 @@ import Link from 'next/link';
 import {useState, useEffect, ChangeEvent} from 'react';
 import {DateTime} from 'luxon';
 import {fetchFiles} from "@/app/lib/fetchFiles";
+import {downloadFile} from "@/app/lib/download";
 
 interface File {
+    id: number;
     name: string;
     size: string;
     modified: string;
@@ -14,6 +16,7 @@ interface File {
 interface FileUploadResponse {
     result: {
         file: {
+            id: number;
             originalName: string;
             fileData: Buffer;
             createdAt: string;
@@ -41,6 +44,7 @@ export default function MyPage() {
             if (isMounted && result.success) {
                 result.files?.forEach((file) => {
                     const newFile = {
+                        id: file.id,
                         name: file.originalName,
                         size: formatFileSize(file.size),
                         modified: file.createdAt.toLocaleString('ja-JP'),
@@ -55,7 +59,7 @@ export default function MyPage() {
     }, []);
 
     const convertToJST = (dateString: string): string => {
-        const utcDate = DateTime.fromISO(dateString, { zone: 'utc' });
+        const utcDate = DateTime.fromISO(dateString, {zone: 'utc'});
         const jstDate = utcDate.setZone('Asia/Tokyo');
         return jstDate.toFormat('yyyy/M/d HH:mm:ss');
     };
@@ -79,6 +83,7 @@ export default function MyPage() {
 
                 const result: FileUploadResponse = await res.json();
                 const newFile = {
+                    id: result.result.file.id,
                     name: result.result.file.originalName,
                     size: formatFileSize(uploadedFile.size),
                     modified: convertToJST(result.result.file.createdAt),
@@ -90,6 +95,33 @@ export default function MyPage() {
             }
         }
     };
+
+    const handleDownload = async (fileId: number) => {
+        try {
+            const res = await downloadFile(fileId);
+            if (!res.success) {
+                throw new Error('ファイルダウンロード中にエラーが発生しました');
+            }
+            if (!res.file) {
+                throw new Error('ファイルが見つかりません');
+            }
+
+            const buffer = Buffer.from(res.file.fileData);
+            const blob = new Blob([buffer], {type: 'application/octet-stream'});
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = res.file.originalName;
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            window.URL.revokeObjectURL(url);
+
+        } catch (error) {
+            console.error('ファイルダウンロード中にエラーが発生しました', error);
+        }
+    };
+
 
     return (
         <main className='flex min-h-screen flex-col items-center'>
@@ -105,6 +137,12 @@ export default function MyPage() {
                             <li key={index} className='flex justify-between bg-white p-2 rounded-md shadow-sm'>
                                 <span>{file.name}</span>
                                 <span className='text-sm text-gray-500'>{file.size} - {file.modified}</span>
+                                <button
+                                    onClick={() => handleDownload(file.id)}
+                                    className='text-blue-500 hover:underline'
+                                >
+                                    ダウンロード
+                                </button>
                             </li>
                         ))}
                     </ul>

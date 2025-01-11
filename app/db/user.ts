@@ -1,10 +1,8 @@
-import { prisma } from '@/globals/db';
+import {prisma} from '@/globals/db';
 
 export const getUserByEmail = async (email: string) => {
   try {
-    const user = await prisma.user.findUnique({ where: { email } });
-
-    return user;
+    return await prisma.user.findUnique({where: {email}});
   } catch (error) {
     return null;
   }
