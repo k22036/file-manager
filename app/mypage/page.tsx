@@ -42,7 +42,7 @@ export default function MyPage() {
                 result.files?.forEach((file) => {
                     const newFile = {
                         name: file.originalName,
-                        size: formatFileSize(file.fileData.length),
+                        size: formatFileSize(file.size),
                         modified: file.createdAt.toLocaleString('ja-JP'),
                     };
                     setFiles((files) => [...files, newFile]);

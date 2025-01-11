@@ -24,6 +24,7 @@ model File {
   id           Int      @id @default(autoincrement())
   originalName String
   fileData     Bytes
+  size         Int
   createdAt    DateTime @default(now())
   userId       String
   user         User     @relation(fields: [userId], references: [id])

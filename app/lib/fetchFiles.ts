@@ -29,7 +29,7 @@ export const fetchFiles = async () => {
             return {
                 id: file.id,
                 originalName: file.originalName,
-                fileData: Buffer.from(file.fileData).toString('base64'),
+                size: file.size,
                 createdAt: file.createdAt,
             };
         });

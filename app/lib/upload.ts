@@ -17,6 +17,7 @@ export const uploadFile = async (req: Request) => {
         // ファイルデータをバッファとして読み込む
         const arrayBuffer = await file.arrayBuffer();
         const buffer = Buffer.from(arrayBuffer);
+        const size = file.size;
 
         // セッション情報を取得
         const session = await auth();
@@ -36,6 +37,7 @@ export const uploadFile = async (req: Request) => {
             data: {
                 originalName: file.name ?? 'unknown',
                 fileData: buffer,
+                size: size,
                 userId: userId,
             },
         });
