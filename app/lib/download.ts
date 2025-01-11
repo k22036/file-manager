@@ -1,8 +1,8 @@
 'use server';
 
-import { auth } from '@/auth';
-import { getUserByEmail } from "@/app/db/user";
-import { getFileById } from "@/app/db/file";
+import {auth} from '@/auth';
+import {getUserByEmail} from "@/app/db/user";
+import {getFileById} from "@/app/db/file";
 
 export const downloadFile = async (fileId: number) => {
     try {
@@ -31,11 +31,11 @@ export const downloadFile = async (fileId: number) => {
             fileData: file.fileData,
         }
 
-        return { success: true, file: res };
+        return {success: true, file: res};
     } catch (error) {
         if (error instanceof Error) {
             console.error('ファイル情報取得中にエラーが発生しました', error);
         }
-        return { success: false, error: 'ファイル情報取得中にエラーが発生しました' };
+        return {success: false, error: 'ファイル情報取得中にエラーが発生しました'};
     }
 };

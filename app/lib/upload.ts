@@ -1,7 +1,7 @@
 'use server';
 
-import { prisma } from '@/globals/db';
-import { auth } from '@/auth';
+import {prisma} from '@/globals/db';
+import {auth} from '@/auth';
 import {getUserByEmail} from "@/app/db/user";
 
 export const uploadFile = async (req: Request) => {
@@ -42,11 +42,11 @@ export const uploadFile = async (req: Request) => {
             },
         });
 
-        return { success: true, file: newFile };
+        return {success: true, file: newFile};
     } catch (error) {
         if (error instanceof Error) {
             console.error('ファイルアップロード中にエラーが発生しました', error);
         }
-        return { success: false, error: 'ファイルアップロード中にエラーが発生しました' };
+        return {success: false, error: 'ファイルアップロード中にエラーが発生しました'};
     }
 };
