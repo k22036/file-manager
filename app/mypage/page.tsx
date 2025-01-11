@@ -2,11 +2,22 @@
 
 import Link from 'next/link';
 import { useState, useEffect, ChangeEvent } from 'react';
+import { DateTime } from 'luxon';
 
 interface File {
     name: string;
     size: string;
     modified: string;
+}
+
+interface FileUploadResponse {
+    result: {
+        file: {
+            originalName: string;
+            fileData: Buffer;
+            createdAt: string;
+        };
+    }
 }
 
 export default function MyPage() {
@@ -22,15 +33,50 @@ export default function MyPage() {
         setFiles(fetchedFiles);
     }, []);
 
-    const handleUpload = (event: ChangeEvent<HTMLInputElement>) => {
+    const formatFileSize = (bytes: number): string => {
+        if (bytes < 1024) return `${bytes} B`;
+        const kilobytes = bytes / 1024;
+        if (kilobytes < 1024) return `${kilobytes.toFixed(2)} KB`;
+        const megabytes = kilobytes / 1024;
+        if (megabytes < 1024) return `${megabytes.toFixed(2)} MB`;
+        const gigabytes = megabytes / 1024;
+        return `${gigabytes.toFixed(2)} GB`;
+    };
+
+    const convertToJST = (dateString: string): string => {
+        const utcDate = DateTime.fromISO(dateString, { zone: 'utc' });
+        const jstDate = utcDate.setZone('Asia/Tokyo');
+        return jstDate.toLocaleString(DateTime.DATETIME_MED);
+    };
+
+    const handleUpload = async (event: ChangeEvent<HTMLInputElement>) => {
         const uploadedFile = event.target.files?.[0];
         if (uploadedFile) {
-            const newFile: File = {
-                name: uploadedFile.name,
-                size: `${(uploadedFile.size / 1000).toFixed(2)} KB`,
-                modified: new Date().toISOString().split('T')[0],
-            };
-            setFiles((prevFiles) => [...prevFiles, newFile]);
+            // APIにファイルをアップロード
+            try {
+                const formData = new FormData();
+                formData.append('file', uploadedFile);
+
+                // ファイルをアップロードするAPIエンドポイントを呼び出し
+                const res = await fetch('/api/upload', {
+                    method: 'POST',
+                    body: formData,
+                });
+                if (!res.ok) {
+                    throw new Error('ファイルアップロード中にエラーが発生しました');
+                }
+
+                const result: FileUploadResponse = await res.json();
+                const newFile = {
+                    name: result.result.file.originalName,
+                    size: formatFileSize(uploadedFile.size),
+                    modified: convertToJST(result.result.file.createdAt),
+                }
+                setFiles([...files, newFile]);
+                console.log(result);
+            } catch (error) {
+                console.error('ファイルアップロード中にエラーが発生しました', error);
+            }
         }
     };
 

@@ -16,12 +16,17 @@ model User {
   password String
 
   File File[]
+
+  @@map("users")
 }
 
 model File {
-  id           Int    @id @default(autoincrement())
+  id           Int      @id @default(autoincrement())
   originalName String
   fileData     Bytes
+  createdAt    DateTime @default(now())
   userId       String
-  user         User   @relation(fields: [userId], references: [id])
+  user         User     @relation(fields: [userId], references: [id])
+
+  @@map("files")
 }
