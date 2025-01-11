@@ -57,3 +57,5 @@ npx prisma migrate reset
 
 - [NextAuth.js](https://next-auth.js.org)
 - [Next.jsとPrismaとNext Auth v5で作る最新の認証機能](https://qiita.com/takubii/items/dba560577ccbb436e5a3)
+- [React Server Actions 上でリクエストを認証する](https://zenn.dev/shiba_hiro/articles/serveractions-auth)
+- [ReactのuseEffectで非同期処理を安全に行うベストプラクティスを解説](https://ittrip.xyz/react/react-useeffect-async-tips)
