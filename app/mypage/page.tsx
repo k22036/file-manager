@@ -1,8 +1,9 @@
 'use client';
 
 import Link from 'next/link';
-import { useState, useEffect, ChangeEvent } from 'react';
-import { DateTime } from 'luxon';
+import {useState, useEffect, ChangeEvent} from 'react';
+import {DateTime} from 'luxon';
+import {fetchFiles} from "@/app/lib/fetchFiles";
 
 interface File {
     name: string;
@@ -23,16 +24,6 @@ interface FileUploadResponse {
 export default function MyPage() {
     const [files, setFiles] = useState<File[]>([]);
 
-    useEffect(() => {
-        // Fetch files (simulate fetching file list from a server or storage)
-        const fetchedFiles: File[] = [
-            { name: 'document1.txt', size: '15 KB', modified: '2025-01-08' },
-            { name: 'presentation.pptx', size: '2 MB', modified: '2025-01-07' },
-            { name: 'image.jpg', size: '500 KB', modified: '2025-01-06' },
-        ];
-        setFiles(fetchedFiles);
-    }, []);
-
     const formatFileSize = (bytes: number): string => {
         if (bytes < 1024) return `${bytes} B`;
         const kilobytes = bytes / 1024;
@@ -43,8 +34,28 @@ export default function MyPage() {
         return `${gigabytes.toFixed(2)} GB`;
     };
 
+    useEffect(() => {
+        let isMounted = true; // マウント状態を管理するフラグ
+
+        fetchFiles().then((result) => {
+            if (isMounted && result.success) {
+                result.files?.forEach((file) => {
+                    const newFile = {
+                        name: file.originalName,
+                        size: formatFileSize(file.fileData.length),
+                        modified: file.createdAt.toLocaleString('ja-JP'),
+                    };
+                    setFiles((files) => [...files, newFile]);
+                });
+            }
+        });
+        return () => {
+            isMounted = false; // アンマウント時にフラグをオフ
+        };
+    }, []);
+
     const convertToJST = (dateString: string): string => {
-        const utcDate = DateTime.fromISO(dateString, { zone: 'utc' });
+        const utcDate = DateTime.fromISO(dateString, {zone: 'utc'});
         const jstDate = utcDate.setZone('Asia/Tokyo');
         return jstDate.toLocaleString(DateTime.DATETIME_MED);
     };
@@ -88,7 +99,7 @@ export default function MyPage() {
                     ファイル管理
                 </div>
                 <div className='bg-gray-100 rounded-bl-md rounded-br-md p-2'>
-                    <input type='file' onChange={handleUpload} className='mb-4' />
+                    <input type='file' onChange={handleUpload} className='mb-4'/>
                     <ul className='space-y-2'>
                         {files.map((file, index) => (
                             <li key={index} className='flex justify-between bg-white p-2 rounded-md shadow-sm'>
