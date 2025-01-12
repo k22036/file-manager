@@ -41,7 +41,7 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 - NextAuth
 - zod
 
-### genarate prisma client
+### generate prisma client
 
 ```bash
 npx prisma generate
